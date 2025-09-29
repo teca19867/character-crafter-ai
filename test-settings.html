@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #111; color: #fff; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #333; border-radius: 5px; }
+        button { padding: 8px 16px; margin: 5px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #45a049; }
+        .error { color: #ff6b6b; }
+        .success { color: #51cf66; }
+        pre { background: #222; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Character Crafter AI - Settings Test</h1>
+    
+    <div class="test-section">
+        <h3>Test Settings Service</h3>
+        <button onclick="testSaveSettings()">Test Save Settings</button>
+        <button onclick="testLoadSettings()">Test Load Settings</button>
+        <button onclick="testClearSettings()">Test Clear Settings</button>
+        <button onclick="testExportSettings()">Test Export Settings</button>
+        <button onclick="testImportSettings()">Test Import Settings</button>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Current Settings</h3>
+        <pre id="current-settings"></pre>
+    </div>
+
+    <script type="module">
+        // 模拟设置服务
+        const SETTINGS_STORAGE_KEY = 'character-crafter-settings';
+        const SETTINGS_VERSION = '1.0.0';
+
+        const testSettings = {
+            llmApiProvider: 'third-party',
+            llmModel: 'gpt-4',
+            llmApiUrl: 'https://api.openai.com/v1',
+            llmApiKey: 'YOUR_API_KEY_HERE', // Please replace with your actual API key
+            imageApiProvider: 'google',
+            imageModel: 'imagen-4.0-generate-001',
+            imageApiUrl: '',
+            imageApiKey: 'YOUR_IMAGE_API_KEY_HERE', // Please replace with your actual API key
+            imageAspectRatio: '1:1',
+            profilePrompt: 'Test profile prompt',
+            cardPrompt: 'Test card prompt',
+            promptPrompt: 'Test prompt prompt'
+        };
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('test-results');
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            results.appendChild(div);
+        }
+
+        function updateCurrentSettings() {
+            const current = localStorage.getItem(SETTINGS_STORAGE_KEY);
+            document.getElementById('current-settings').textContent = current ? JSON.stringify(JSON.parse(current), null, 2) : 'No settings stored';
+        }
+
+        window.testSaveSettings = function() {
+            try {
+                const storedData = {
+                    version: SETTINGS_VERSION,
+                    settings: testSettings,
+                    lastSaved: Date.now()
+                };
+                localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(storedData));
+                log('Settings saved successfully', 'success');
+                updateCurrentSettings();
+            } catch (error) {
+                log(`Save failed: ${error.message}`, 'error');
+            }
+        };
+
+        window.testLoadSettings = function() {
+            try {
+                const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+                if (stored) {
+                    const data = JSON.parse(stored);
+                    log(`Settings loaded: ${data.settings.llmApiProvider} - ${data.settings.llmModel}`, 'success');
+                } else {
+                    log('No settings found', 'error');
+                }
+                updateCurrentSettings();
+            } catch (error) {
+                log(`Load failed: ${error.message}`, 'error');
+            }
+        };
+
+        window.testClearSettings = function() {
+            try {
+                localStorage.removeItem(SETTINGS_STORAGE_KEY);
+                log('Settings cleared successfully', 'success');
+                updateCurrentSettings();
+            } catch (error) {
+                log(`Clear failed: ${error.message}`, 'error');
+            }
+        };
+
+        window.testExportSettings = function() {
+            try {
+                const exportData = {
+                    version: SETTINGS_VERSION,
+                    settings: testSettings,
+                    exportedAt: Date.now(),
+                    appName: 'Character Crafter AI'
+                };
+                const jsonString = JSON.stringify(exportData, null, 2);
+                log('Settings exported (check console)', 'success');
+                console.log('Exported settings:', jsonString);
+            } catch (error) {
+                log(`Export failed: ${error.message}`, 'error');
+            }
+        };
+
+        window.testImportSettings = function() {
+            try {
+                const importData = {
+                    version: SETTINGS_VERSION,
+                    settings: {
+                        ...testSettings,
+                        llmModel: 'gpt-3.5-turbo'
+                    },
+                    exportedAt: Date.now(),
+                    appName: 'Character Crafter AI'
+                };
+                const jsonString = JSON.stringify(importData);
+                const parsed = JSON.parse(jsonString);
+                log(`Settings imported: ${parsed.settings.llmModel}`, 'success');
+            } catch (error) {
+                log(`Import failed: ${error.message}`, 'error');
+            }
+        };
+
+        // 初始化显示
+        updateCurrentSettings();
+    </script>
+</body>
+</html>

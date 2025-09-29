@@ -1,0 +1,5 @@
+{
+  "name": "Character Crafter AI",
+  "description": "An AI-assisted single-page application for novelists to create and develop characters through a seamless, vertically-scrolling workflow. It allows users to generate character profiles, cards, and images, with options to save and load their projects locally.",
+  "requestFramePermissions": []
+}
